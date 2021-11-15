@@ -1,0 +1,60 @@
+GroupAggregate  (cost=286366.54..286369.47 rows=2 width=135) (actual time=1321.567..1529.170 rows=1 loops=1)
+   Group Key: tei.trackedentityinstanceid, tei.uid, tei.created, tei.lastupdated, ou.uid, ou.name, tet.uid, tei.inactive
+   ->  Sort  (cost=286366.54..286366.78 rows=97 width=124) (actual time=1321.531..1529.134 rows=16 loops=1)
+         Sort Key: tei.trackedentityinstanceid, tei.uid, tei.created, tei.lastupdated, ou.uid, ou.name, tet.uid, tei.inactive
+         Sort Method: quicksort  Memory: 29kB
+         ->  Nested Loop Left Join  (cost=286296.15..286363.34 rows=97 width=124) (actual time=1321.406..1529.021 rows=16 loops=1)
+               ->  Nested Loop Left Join  (cost=286289.03..286290.07 rows=1 width=103) (actual time=1321.309..1528.904 rows=1 loops=1)
+                     Join Filter: (tet.trackedentitytypeid = tei.trackedentitytypeid)
+                     ->  Limit  (cost=286289.03..286289.04 rows=1 width=72) (actual time=1321.282..1528.874 rows=1 loops=1)
+                           ->  Sort  (cost=286289.03..286289.04 rows=1 width=72) (actual time=1281.133..1488.724 rows=1 loops=1)
+                                 Sort Key: tei.trackedentityinstanceid
+                                 Sort Method: quicksort  Memory: 25kB
+                                 ->  Nested Loop  (cost=14722.33..286289.02 rows=1 width=72) (actual time=1269.709..1488.706 rows=1 loops=1)
+                                       Join Filter: (tei.organisationunitid = ou.organisationunitid)
+                                       Rows Removed by Join Filter: 1106
+                                       ->  Nested Loop  (cost=14722.33..285611.27 rows=1 width=53) (actual time=1266.982..1485.977 rows=1 loops=1)
+                                             Join Filter: ("TfdH5KvFmMy".trackedentityinstanceid = "ciCR6BBvIT4".trackedentityinstanceid)
+                                             ->  Gather  (cost=14721.89..285610.43 rows=1 width=69) (actual time=1048.396..1485.909 rows=3 loops=1)
+                                                   Workers Planned: 2
+                                                   Workers Launched: 2
+                                                   ->  Nested Loop  (cost=13721.89..284610.33 rows=1 width=69) (actual time=997.302..1246.806 rows=1 loops=3)
+                                                         Join Filter: ("TfdH5KvFmMy".trackedentityinstanceid = "aW66s2QSosT".trackedentityinstanceid)
+                                                         ->  Nested Loop  (cost=13721.45..284579.94 rows=36 width=61) (actual time=238.383..1236.200 rows=525 loops=3)
+                                                               ->  Parallel Bitmap Heap Scan on trackedentityattributevalue "TfdH5KvFmMy"  (cost=13721.03..284484.63 rows=36 width=8) (actual time=238.243..1224.414 rows=525 loops=3)
+                                                                     Recheck Cond: (trackedentityattributeid = 3485)
+                                                                     Filter: (lower((value)::text) ~~ '%marthe%'::text)
+                                                                     Rows Removed by Filter: 515963
+                                                                     Heap Blocks: exact=86608
+                                                                     ->  Bitmap Index Scan on in_trackedentityattributevalue_attributeid  (cost=0.00..13721.00 rows=1542529 width=0) (actual time=149.945..149.946 rows=1561878 loops=1)
+                                                                           Index Cond: (trackedentityattributeid = 3485)
+                                                               ->  Index Scan using trackedentityinstance_pkey on trackedentityinstance tei  (cost=0.43..2.65 rows=1 width=53) (actual time=0.020..0.020 rows=1 loops=1575)
+                                                                     Index Cond: (trackedentityinstanceid = "TfdH5KvFmMy".trackedentityinstanceid)
+                                                                     Filter: ((deleted IS FALSE) AND (trackedentitytypeid = 3501))
+                                                         ->  Index Scan using trackedentityattributevalue_pkey on trackedentityattributevalue "aW66s2QSosT"  (cost=0.44..0.83 rows=1 width=8) (actual time=0.020..0.020 rows=0 loops=1575)
+                                                               Index Cond: ((trackedentityinstanceid = tei.trackedentityinstanceid) AND (trackedentityattributeid = 3461))
+                                                               Filter: (lower((value)::text) ~~ '%mujawabera%'::text)
+                                                               Rows Removed by Filter: 1
+                                             ->  Index Scan using trackedentityattributevalue_pkey on trackedentityattributevalue "ciCR6BBvIT4"  (cost=0.44..0.83 rows=1 width=8) (actual time=0.012..0.012 rows=0 loops=3)
+                                                   Index Cond: ((trackedentityinstanceid = tei.trackedentityinstanceid) AND (trackedentityattributeid = 3465))
+                                                   Filter: (lower((value)::text) ~~ '%0786197849%'::text)
+                                                   Rows Removed by Filter: 1
+                                       ->  Seq Scan on organisationunit ou  (cost=0.00..618.88 rows=4710 width=34) (actual time=0.015..2.656 rows=1107 loops=1)
+                                             Filter: ((path)::text ~~ '/Hjw70Lodtf2%'::text)
+                     ->  Seq Scan on trackedentitytype tet  (cost=0.00..1.01 rows=1 width=48) (actual time=0.009..0.010 rows=1 loops=1)
+               ->  Hash Left Join  (cost=7.11..72.30 rows=97 width=29) (actual time=0.092..0.109 rows=16 loops=1)
+                     Hash Cond: (teav.trackedentityattributeid = tea.trackedentityattributeid)
+                     ->  Index Scan using trackedentityattributevalue_pkey on trackedentityattributevalue teav  (cost=0.44..65.34 rows=97 width=25) (actual time=0.019..0.025 rows=16 loops=1)
+                           Index Cond: (trackedentityinstanceid = tei.trackedentityinstanceid)
+                           Filter: (trackedentityattributeid = ANY ('{3485,3461,3465,12778931,3469,3481,5879557,5975135,4347,42647,3473,4422,32927,32844,32845,42533,42512}'::bigint[]))
+                           Rows Removed by Filter: 1
+                     ->  Hash  (cost=6.30..6.30 rows=30 width=20) (actual time=0.050..0.054 rows=33 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                           ->  Seq Scan on trackedentityattribute tea  (cost=0.00..6.30 rows=30 width=20) (actual time=0.007..0.034 rows=33 loops=1)
+ Planning Time: 8.288 ms
+ JIT:
+   Functions: 107
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+   Timing: Generation 12.562 ms, Inlining 0.000 ms, Optimization 6.735 ms, Emission 70.615 ms, Total 89.911 ms
+ Execution Time: 1571.082 ms
+(59 rows)
